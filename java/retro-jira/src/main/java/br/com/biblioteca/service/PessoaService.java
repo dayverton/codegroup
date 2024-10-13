@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -51,8 +52,29 @@ public class PessoaService {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         return objectMapper;
+    }
+
+    public List<PessoaResponseDTO> buscarGerentes() {
+        List<PessoaModel> gerenteLista = pessoaRepository.findByGerenteTrue();
+
+        ObjectMapper objectMapper = instanciarMapeador();
+
+        return gerenteLista.stream()
+                .map(model -> objectMapper.convertValue(model, PessoaResponseDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<PessoaResponseDTO> buscarFuncionarios() {
+        List<PessoaModel> funcionarioLista = pessoaRepository.findByFuncionarioTrue();
+
+        ObjectMapper objectMapper = instanciarMapeador();
+
+        return funcionarioLista.stream()
+                .map(model -> objectMapper.convertValue(model, PessoaResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
 }

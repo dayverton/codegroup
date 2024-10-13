@@ -11,4 +11,8 @@ import br.com.biblioteca.model.PessoaModel;
 public interface PessoaRepository extends JpaRepository<PessoaModel, Long> {
 
     List<PessoaModel> findAllByOrderByIdDesc();
+
+    List<PessoaModel> findByGerenteTrue();
+
+    List<PessoaModel> findByFuncionarioTrue();
 }
