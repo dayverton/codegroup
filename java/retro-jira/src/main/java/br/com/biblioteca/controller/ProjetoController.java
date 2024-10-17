@@ -6,16 +6,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import br.com.biblioteca.dto.response.PessoaResponseDTO;
+import br.com.biblioteca.dto.request.ProjetoRequestDTO;
+import br.com.biblioteca.dto.response.ProjetoResponseDTO;
 import br.com.biblioteca.enums.RiscoEnum;
 import br.com.biblioteca.enums.StatusEnum;
-import br.com.biblioteca.model.ProjetoModel;
-import br.com.biblioteca.service.PessoaService;
 import br.com.biblioteca.service.ProjetoService;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +32,6 @@ public class ProjetoController {
 	private static final String URL = "redirect:/projetos";
 
 	private final ProjetoService projetoService;
-	private final PessoaService pessoaService;
 
 	@GetMapping
 	public String home(Model model, HttpServletRequest httpServletRequest) {
@@ -43,10 +43,10 @@ public class ProjetoController {
 	}
 
 	@PostMapping("/salvar")
-	public String salvarProjeto(@ModelAttribute ProjetoModel projeto,
+	public String salvarProjeto(@ModelAttribute ProjetoRequestDTO projeto,
 			RedirectAttributes redirectAttributes) {
 		try {
-			projetoService.salvar(projeto);
+			projetoService.salvarProjeto(projeto);
 
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("erroMensagem", e.getMessage());
@@ -54,16 +54,33 @@ public class ProjetoController {
 		return URL;
 	}
 
-	@GetMapping("/gerentes/buscar")
-	@ResponseBody
-	public List<PessoaResponseDTO> buscarGerentes() {
-		return pessoaService.buscarGerentes();
+	@PostMapping("/excluir/{id}")
+	public String excluirProjeto(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+		try {
+			projetoService.excluirProjeto(id);
+		} catch (Exception e) {
+			redirectAttributes.addFlashAttribute("erroMensagem", e.getMessage());
+		}
+		return URL;
 	}
 
-	@GetMapping("/funcionarios/buscar")
+	@GetMapping("/buscar/{id}")
 	@ResponseBody
-	public List<PessoaResponseDTO> buscarFuncionarios() {
-		return pessoaService.buscarFuncionarios();
+	public ProjetoResponseDTO buscarProjetoPorId(@PathVariable Long id) {
+		return projetoService.buscarProjetoPorId(id);
+	}
+
+	@GetMapping("/pesquisar")
+	public String pesquisarProjetos(@RequestParam String nome, Model model) {
+		List<ProjetoResponseDTO> projetos;
+
+		if (nome == null || nome.trim().isEmpty())
+			projetos = projetoService.listarTodosProjetos();
+		else
+			projetos = projetoService.buscarProjetosPorNome(nome);
+
+		model.addAttribute("projetos", projetos);
+		return "fragments/projetos";
 	}
 
 }

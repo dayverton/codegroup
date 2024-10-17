@@ -7,9 +7,15 @@
     <td>${projeto.dataInicio}</td>
     <td>${projeto.gerente.nome}</td>
     <td>${projeto.status}</td>
+    <td>${projeto.risco}</td>
     <td>
+      <button class="btn btn-warning btn-editar" data-id="${projeto.id}">
+        Editar
+      </button>
       <c:if test="${projeto.status != 'INICIADO' && projeto.status != 'EM_ANDAMENTO' && projeto.status != 'ENCERRADO'}">
-        Excluir
+        <button class="btn btn-danger btn-excluir" data-id="${projeto.id}">
+          Excluir
+        </button>
       </c:if>
     </td>
   </tr>

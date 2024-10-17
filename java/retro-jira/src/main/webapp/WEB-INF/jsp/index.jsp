@@ -29,6 +29,17 @@
       Novo Projeto
     </button>
 
+    <div class="row mt-3 mb-3">
+      <div class="col-10">
+        <input type="text" class="form-control" id="pesquisaNome" placeholder="Digite o nome do projeto" />
+      </div>
+      <div class="col-2">
+        <button class="btn btn-primary w-100" id="botaoPesquisar">
+          Pesquisar
+        </button>
+      </div>
+    </div>
+
     <table class="table mt-3">
       <thead>
         <tr>
@@ -37,6 +48,7 @@
           <th>Data de Início</th>
           <th>Gerente</th>
           <th>Status</th>
+          <th>Risco</th>
           <th>Ações</th>
         </tr>
       </thead>

@@ -38,12 +38,37 @@ public class PessoaController {
             @ApiResponse(responseCode = "400", content = @Content),
             @ApiResponse(responseCode = "500", content = @Content)
     })
-    @GetMapping("/buscar")
-    public ResponseEntity<GenericApiResponseDTO<List<PessoaResponseDTO>>> buscarPessoas() {
+    @GetMapping("/funcionarios/buscar")
+    public ResponseEntity<GenericApiResponseDTO<List<PessoaResponseDTO>>> buscarFuncionarios() {
         GenericApiResponseDTO<List<PessoaResponseDTO>> response = new GenericApiResponseDTO<>();
 
         try {
-            List<PessoaResponseDTO> pessoaLista = pessoaService.buscarPessoas();
+            List<PessoaResponseDTO> pessoaLista = pessoaService.buscarFuncionarios();
+
+            response.setSuccess(true);
+            response.setData(pessoaLista);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setError(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = PessoaResponseDTO.class))
+            }),
+            @ApiResponse(responseCode = "400", content = @Content),
+            @ApiResponse(responseCode = "500", content = @Content)
+    })
+    @GetMapping("/gerentes/buscar")
+    public ResponseEntity<GenericApiResponseDTO<List<PessoaResponseDTO>>> buscarGerentes() {
+        GenericApiResponseDTO<List<PessoaResponseDTO>> response = new GenericApiResponseDTO<>();
+
+        try {
+            List<PessoaResponseDTO> pessoaLista = pessoaService.buscarGerentes();
 
             response.setSuccess(true);
             response.setData(pessoaLista);

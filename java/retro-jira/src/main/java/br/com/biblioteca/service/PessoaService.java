@@ -5,15 +5,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import br.com.biblioteca.dto.request.PessoaRequestDTO;
 import br.com.biblioteca.dto.response.PessoaResponseDTO;
 import br.com.biblioteca.model.PessoaModel;
 import br.com.biblioteca.repository.PessoaRepository;
+import br.com.biblioteca.utils.ObjectMapperUtil;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -33,48 +31,37 @@ public class PessoaService {
 
         pessoaRepository.saveAndFlush(pessoa);
 
-        ObjectMapper objectMapper = instanciarMapeador();
+        ObjectMapper objectMapper = ObjectMapperUtil.getInstance();
 
         return objectMapper.convertValue(pessoa, PessoaResponseDTO.class);
     }
 
-    public List<PessoaResponseDTO> buscarPessoas() {
-        List<PessoaModel> pessoaLista = pessoaRepository.findAllByOrderByIdDesc();
+    public List<PessoaResponseDTO> buscarGerentes() {
+        List<PessoaModel> gerenteLista = pessoaRepository.findByGerenteTrue();
+        return buscarPessoas(gerenteLista);
+    }
 
-        ObjectMapper objectMapper = instanciarMapeador();
+    public List<PessoaResponseDTO> buscarFuncionarios() {
+        List<PessoaModel> funcionarioLista = pessoaRepository.findByFuncionarioTrue();
+        return buscarPessoas(funcionarioLista);
+    }
+
+    private List<PessoaResponseDTO> buscarPessoas(List<PessoaModel> pessoaLista) {
+
+        ObjectMapper objectMapper = ObjectMapperUtil.getInstance();
 
         return pessoaLista.stream()
                 .map(model -> objectMapper.convertValue(model, PessoaResponseDTO.class))
                 .collect(Collectors.toList());
     }
 
-    private ObjectMapper instanciarMapeador() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        return objectMapper;
+    protected PessoaModel buscarGerenteById(Long gerenteId) {
+        return pessoaRepository.findByGerenteTrueById(gerenteId).orElseThrow(() -> new IllegalArgumentException(
+                "Gerente não encontrado com o ID: " + gerenteId));
     }
 
-    public List<PessoaResponseDTO> buscarGerentes() {
-        List<PessoaModel> gerenteLista = pessoaRepository.findByGerenteTrue();
-
-        ObjectMapper objectMapper = instanciarMapeador();
-
-        return gerenteLista.stream()
-                .map(model -> objectMapper.convertValue(model, PessoaResponseDTO.class))
-                .collect(Collectors.toList());
-    }
-
-    public List<PessoaResponseDTO> buscarFuncionarios() {
-        List<PessoaModel> funcionarioLista = pessoaRepository.findByFuncionarioTrue();
-
-        ObjectMapper objectMapper = instanciarMapeador();
-
-        return funcionarioLista.stream()
-                .map(model -> objectMapper.convertValue(model, PessoaResponseDTO.class))
-                .collect(Collectors.toList());
+    protected List<PessoaModel> buscarMembrosByIdList(List<Long> membrosIds) {
+        return pessoaRepository.findByFuncionarioTrueByIds(membrosIds);
     }
 
 }

@@ -25,7 +25,7 @@
           </div>
           <div class="form-group">
             <label for="gerente">Gerente</label>
-            <select class="form-control" id="gerente" name="gerente.id" required></select>
+            <select class="form-control" id="gerente" name="gerente" required></select>
           </div>
           <div class="form-group">
             <label for="status">Status</label>

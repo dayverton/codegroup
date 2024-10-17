@@ -11,4 +11,6 @@ import br.com.biblioteca.model.ProjetoModel;
 public interface ProjetoRepository extends JpaRepository<ProjetoModel, Long> {
 
     List<ProjetoModel> findAllByOrderByIdAsc();
+
+    List<ProjetoModel> findByNomeContainingIgnoreCase(String nome);
 }
