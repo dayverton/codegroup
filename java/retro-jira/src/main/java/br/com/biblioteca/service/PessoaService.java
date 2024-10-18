@@ -55,12 +55,12 @@ public class PessoaService {
                 .collect(Collectors.toList());
     }
 
-    protected PessoaModel buscarGerenteById(Long gerenteId) {
+    public PessoaModel buscarGerenteById(Long gerenteId) {
         return pessoaRepository.findByGerenteTrueById(gerenteId).orElseThrow(() -> new IllegalArgumentException(
                 "Gerente não encontrado com o ID: " + gerenteId));
     }
 
-    protected List<PessoaModel> buscarMembrosByIdList(List<Long> membrosIds) {
+    public List<PessoaModel> buscarMembrosByIdList(List<Long> membrosIds) {
         return pessoaRepository.findByFuncionarioTrueByIds(membrosIds);
     }
 
